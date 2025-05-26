@@ -4,16 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mini Clicker</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
 
-<main id="main">
-  <h1>Mini Clicker</h1>
-  <div id="coins">Монет: 0</div>
-  <div id="level">Уровень: 1</div>
-  <div id="progress-container"><div id="progress-bar"></div></div>
-  <div id="coin-button" onclick="clickCoin(event)"></div>
+<main>
+  <section id="main">
+    <h1>Mini Clicker</h1>
+    <div id="coins">Монет: 0</div>
+    <div id="level">Уровень: 1</div>
+    <div id="progress-container"><div id="progress-bar"></div></div>
+    <div id="coin-button" onclick="clickCoin(event)"></div>
+  </section>
 
   <section id="shop" class="section hidden">
     <h2>Магазин</h2>
@@ -33,6 +35,15 @@
       <div>Улучшение клика (+1 монета за клик)</div>
       <button id="buy-click-upgrade-btn" onclick="buyClickUpgrade()">Купить за <span id="clickUpgradeCost">30</span> монет</button>
     </div>
+    <!-- Новые товары -->
+    <div class="item">
+      <div>Большой бонус +200 монет</div>
+      <button onclick="buy(200, 100)">Купить за 100 монет</button>
+    </div>
+    <div class="item">
+      <div>Супер автокликер (5 монет в секунду)</div>
+      <button onclick="buySuperAutoClicker()">Купить за 250 монет</button>
+    </div>
   </section>
 
   <section id="tasks" class="section hidden">
@@ -40,6 +51,14 @@
     <div class="task">
       <div>Кликни 20 раз</div>
       <button onclick="claimTask(20)">Получить 15 монет</button>
+    </div>
+    <div class="task">
+      <div>Кликни 100 раз</div>
+      <button onclick="claimTask(100)">Получить 100 монет</button>
+    </div>
+    <div class="task">
+      <div>Достигни уровень 10</div>
+      <button onclick="claimLevelTask(10)">Получить 200 монет</button>
     </div>
   </section>
 
@@ -66,6 +85,6 @@
 <audio id="click-sound" src="sounds/click.mp3" preload="auto"></audio>
 <audio id="buy-sound" src="sounds/buy.mp3" preload="auto"></audio>
 
-<script src="main.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
