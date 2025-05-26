@@ -2,62 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Italian Restaurant Menu</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Collapsible Menu</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <header>
     <h1>Italian Restaurant Menu</h1>
   </header>
 
-  <aside id="sidebar">
-    <nav>
-      <a href="#" onclick="toggleSection('starters')">Starters</a>
-      <a href="#" onclick="toggleSection('pasta')">Pasta</a>
-      <a href="#" onclick="toggleSection('desserts')">Desserts</a>
-    </nav>
-
-    <section class="preferences">
-      <h3>Dietary Preferences</h3>
-      <label><input type="checkbox" class="pref-filter" value="vegetarian"> Vegetarian</label>
-      <label><input type="checkbox" class="pref-filter" value="gluten-free"> Gluten-Free</label>
-      <label><input type="checkbox" class="pref-filter" value="lactose-free"> Lactose-Free</label>
-      <label><input type="checkbox" class="pref-filter" value="vegan"> Vegan</label>
-      <label><input type="checkbox" class="pref-filter" value="nut-free"> Nut-Free</label>
-    </section>
-  </aside>
-
   <main>
-    <section id="starters" class="category">
-      <h2 onclick="toggleSection('starters')">Starters ▼</h2>
-      <div class="item" data-price="8">
-        <h3>Classic Bruschetta</h3>
-        <p>Toasted baguette with tomatoes, basil, and olive oil</p>
-        <label><input type="checkbox" class="option" data-price="2"> Cheese ($2)</label><br>
-        <label><input type="checkbox" class="option" data-price="3"> Prosciutto ($3)</label><br>
-        <label><input type="checkbox" class="option" data-price="1"> Balsamic ($1)</label>
+    <!-- Starters -->
+    <section class="category">
+      <h2 class="collapsible" data-id="starters">Starters</h2>
+      <div class="content">
+        <div class="item" data-price="8">
+          <h3>Classic Bruschetta</h3>
+          <p>Tomatoes, basil, olive oil</p>
+          <label><input type="checkbox" class="option" data-price="2"> Cheese ($2)</label><br>
+          <label><input type="checkbox" class="option" data-price="3"> Prosciutto ($3)</label><br>
+          <label><input type="checkbox" class="option" data-price="1"> Balsamic ($1)</label>
+        </div>
       </div>
     </section>
 
-    <section id="pasta" class="category">
-      <h2 onclick="toggleSection('pasta')">Pasta ▼</h2>
-      <div class="item" data-price="14">
-        <h3>Spaghetti Carbonara</h3>
-        <p>Classic carbonara with egg and guanciale</p>
-        <label><input type="checkbox" class="option" data-price="4"> Chicken ($4)</label><br>
-        <label><input type="checkbox" class="option" data-price="6"> Shrimp ($6)</label>
+    <!-- Pasta -->
+    <section class="category">
+      <h2 class="collapsible" data-id="pasta">Pasta</h2>
+      <div class="content">
+        <div class="item" data-price="14">
+          <h3>Spaghetti Carbonara</h3>
+          <p>Egg, guanciale, parmesan</p>
+          <label><input type="checkbox" class="option" data-price="4"> Chicken ($4)</label><br>
+          <label><input type="checkbox" class="option" data-price="6"> Shrimp ($6)</label>
+        </div>
       </div>
     </section>
 
-    <section id="desserts" class="category">
-      <h2 onclick="toggleSection('desserts')">Desserts ▼</h2>
-      <div class="item" data-price="9">
-        <h3>Affogato</h3>
-        <p>Vanilla ice cream with espresso</p>
-        <label><input type="checkbox" class="option" data-price="3"> Amaretto ($3)</label><br>
-        <label><input type="checkbox" class="option" data-price="1"> Caramel Sauce ($1)</label><br>
-        <label><input type="checkbox" class="option" data-price="2"> Biscotti ($2)</label>
+    <!-- Desserts -->
+    <section class="category">
+      <h2 class="collapsible" data-id="desserts">Desserts</h2>
+      <div class="content">
+        <div class="item" data-price="8">
+          <h3>Tiramisu</h3>
+          <p>Mascarpone, coffee, cocoa</p>
+          <label><input type="checkbox" class="option" data-price="2"> Amaretto ($2)</label><br>
+          <label><input type="checkbox" class="option" data-price="1"> Chocolate shavings ($1)</label>
+        </div>
       </div>
     </section>
 
@@ -65,10 +57,6 @@
       <h3>Total: $<span id="total">0</span></h3>
     </div>
   </main>
-
-  <footer>
-    &copy; 2025 Italian Restaurant. All rights reserved.
-  </footer>
 
   <script src="script.js"></script>
 </body>
