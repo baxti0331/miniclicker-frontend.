@@ -6,21 +6,26 @@
   <title>Mini Clicker</title>
   <style>
     body {
+      margin: 0;
+      padding: 0;
       background: #121212;
       color: #f0c419;
       font-family: 'Segoe UI', sans-serif;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    main {
+      flex: 1;
       padding: 20px;
+      overflow-y: auto;
     }
 
     h1 {
       font-size: 24px;
       margin-bottom: 10px;
-    }
-
-    #coins {
-      font-size: 32px;
-      margin: 20px 0;
+      text-align: center;
     }
 
     .btn {
@@ -29,79 +34,182 @@
       border: none;
       border-radius: 12px;
       padding: 12px 24px;
-      margin: 10px;
+      margin: 10px auto;
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
       display: block;
-      width: 100%;
       max-width: 300px;
-      margin-left: auto;
-      margin-right: auto;
-      text-decoration: none;
     }
 
-    .btn:hover {
-      opacity: 0.9;
+    #coins {
+      text-align: center;
+      font-size: 28px;
+      margin: 20px 0;
+    }
+
+    .tabbar {
+      display: flex;
+      background: #1f1f1f;
+      border-top: 1px solid #333;
+    }
+
+    .tabbar button {
+      flex: 1;
+      padding: 15px 0;
+      font-size: 16px;
+      background: none;
+      color: #f0c419;
+      border: none;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .task, .shop-item {
+      background: #222;
+      border-radius: 12px;
+      margin: 10px 0;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task button, .shop-item button {
+      background: #f0c419;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-weight: bold;
+      color: #121212;
+      cursor: pointer;
     }
   </style>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-  <h1>Mini Clicker</h1>
-  <div id="coins">Загрузка...</div>
 
-  <button id="click-btn" class="btn">Кликнуть</button>
+<main>
+  <!-- Главная -->
+  <section id="home">
+    <h1>Mini Clicker</h1>
+    <div id="coins">Загрузка...</div>
+    <button class="btn" id="click-btn">Кликнуть</button>
+  </section>
 
-  <!-- Новые кнопки -->
-  <a id="tasks-btn" class="btn" target="_blank">📝 Задания</a>
-  <a id="shop-btn" class="btn" target="_blank">🛒 Магазин</a>
+  <!-- Задания -->
+  <section id="tasks" class="hidden">
+    <h1>Ежедневные задания</h1>
+    <div class="task">
+      <span>Кликни 10 раз</span>
+      <button onclick="completeTask('click_10_times', this)">Выполнить</button>
+    </div>
+    <div class="task">
+      <span>Бонус за день</span>
+      <button onclick="completeTask('bonus', this)">Выполнить</button>
+    </div>
+    <div class="task">
+      <span>Пригласи друга</span>
+      <button onclick="completeTask('invite_friend', this)">Выполнить</button>
+    </div>
+  </section>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+  <!-- Магазин -->
+  <section id="shop" class="hidden">
+    <h1>Магазин</h1>
+    <div class="shop-item">
+      <span>Автокликер — 500 монет</span>
+      <button disabled>Купить</button>
+    </div>
+    <div class="shop-item">
+      <span>Удвоитель — 1000 монет</span>
+      <button disabled>Купить</button>
+    </div>
+  </section>
+</main>
 
-    const userId = tg.initDataUnsafe?.user?.id;
-    const coinsEl = document.getElementById('coins');
-    const clickBtn = document.getElementById('click-btn');
-    const tasksBtn = document.getElementById('tasks-btn');
-    const shopBtn = document.getElementById('shop-btn');
+<!-- Навигация -->
+<div class="tabbar">
+  <button onclick="showTab('home')">🏠</button>
+  <button onclick="showTab('tasks')">📝</button>
+  <button onclick="showTab('shop')">🛒</button>
+</div>
 
-    // Привязка user_id к ссылкам
-    const FRONTEND_URL = 'https://miniclicker-frontend.vercel.app';
-    tasksBtn.href = `${FRONTEND_URL}/tasks.html?user_id=${userId}`;
-    shopBtn.href = `${FRONTEND_URL}/shop.html?user_id=${userId}`;
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
 
-    // Обновление баланса
-    async function updateBalance() {
-      try {
-        const res = await fetch(`https://miniclicker-backend.onrender.com/balance/${userId}`);
-        const data = await res.json();
-        coinsEl.innerText = `Монеты: ${data.coins}`;
-      } catch {
-        coinsEl.innerText = 'Ошибка загрузки';
-      }
+  const userId = tg.initDataUnsafe?.user?.id;
+  const coinsEl = document.getElementById('coins');
+
+  // Показать выбранный раздел
+  function showTab(tabId) {
+    document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+  }
+
+  // Обновить баланс
+  async function updateBalance() {
+    try {
+      const res = await fetch(`https://miniclicker-backend.onrender.com/balance/${userId}`);
+      const data = await res.json();
+      coinsEl.innerText = `Монеты: ${data.coins}`;
+    } catch {
+      coinsEl.innerText = 'Ошибка загрузки';
     }
+  }
 
-    // Клик — добавление монетки
-    clickBtn.addEventListener('click', async () => {
-      try {
-        const res = await fetch('https://miniclicker-backend.onrender.com/click', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: userId })
-        });
-
-        const data = await res.json();
-        if (data.success) {
-          coinsEl.innerText = `Монеты: ${data.coins}`;
-        }
-      } catch (e) {
-        alert('Ошибка отправки клика');
+  // Кликнуть
+  document.getElementById('click-btn').addEventListener('click', async () => {
+    try {
+      const res = await fetch('https://miniclicker-backend.onrender.com/click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        coinsEl.innerText = `Монеты: ${data.coins}`;
       }
-    });
+    } catch {
+      alert('Ошибка клика');
+    }
+  });
 
-    updateBalance();
-  </script>
+  // Выполнить задание
+  async function completeTask(task, btn) {
+    btn.disabled = true;
+    btn.innerText = '...';
+
+    try {
+      const res = await fetch('https://miniclicker-backend.onrender.com/reward', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, task })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        btn.innerText = '✅';
+        updateBalance();
+        alert(`+${data.total} монет`);
+      } else {
+        btn.disabled = false;
+        btn.innerText = 'Выполнить';
+        alert(data.error || 'Ошибка');
+      }
+    } catch {
+      alert('Ошибка задания');
+      btn.disabled = false;
+      btn.innerText = 'Выполнить';
+    }
+  }
+
+  updateBalance();
+</script>
+
 </body>
 </html>
