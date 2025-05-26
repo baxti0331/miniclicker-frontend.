@@ -1,268 +1,161 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Медитация Таймер</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-    body {
-      margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(135deg, #4e54c8, #8f94fb);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      box-sizing: border-box;
-      overflow: hidden;
-    }
-    h1 {
-      margin-top: 0;
-      font-weight: 700;
-      font-size: 2.5rem;
-      text-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-    .buttons {
-      margin: 30px 0;
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    button {
-      background: linear-gradient(145deg, #6c63ff, #4b47f3);
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 8px 15px rgba(75, 71, 243, 0.4);
-      color: white;
-      padding: 15px 30px;
-      font-size: 1.2rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 140px;
-      text-align: center;
-    }
-    button:hover {
-      background: linear-gradient(145deg, #4b47f3, #6c63ff);
-      box-shadow: 0 12px 20px rgba(75, 71, 243, 0.7);
-      transform: translateY(-3px);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Механические часы с загрузкой</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
-    /* Часы */
-    .clock {
-      position: relative;
-      width: 250px;
-      height: 250px;
-      border: 12px solid #fff;
-      border-radius: 50%;
-      background: radial-gradient(circle at center, #6c63ff, #4b47f3);
-      box-shadow: 0 0 30px rgba(75, 71, 243, 0.7);
-      margin: 20px auto;
-      z-index: 1;
-    }
-    .hand {
-      position: absolute;
-      bottom: 50%;
-      left: 50%;
-      transform-origin: bottom center;
-      background: white;
-      border-radius: 6px;
-      transition: transform 0.5s cubic-bezier(0.4, 2.34, 0.3, 1);
-    }
-    .hour {
-      width: 8px;
-      height: 60px;
-      background: #dcd6f7;
-      z-index: 3;
-    }
-    .minute {
-      width: 6px;
-      height: 90px;
-      background: #b8b2f7;
-      z-index: 2;
-    }
-    .second {
-      width: 2px;
-      height: 110px;
-      background: #ff4e50;
-      z-index: 1;
-    }
-    .center-dot {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 18px;
-      height: 18px;
-      background: #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 15px #ff4e50;
-      z-index: 4;
-    }
+  /* Фон */
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    height: 100vh;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
 
-    /* Экран загрузки */
-    #loading-screen {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, #1c1c49, #0d0d2b);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    #loading-screen h2 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px #6c63ff;
-    }
-    #loading-screen p {
-      font-size: 1.2rem;
-      margin-bottom: 40px;
-      max-width: 320px;
-      line-height: 1.4;
-    }
-    .progress-bar-container {
-      width: 320px;
-      height: 20px;
-      background: #22234b;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 10px #6c63ff66 inset;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #6c63ff, #4b47f3);
-      border-radius: 15px;
-      transition: width 0.3s ease;
-    }
-  </style>
+  /* Экран загрузки */
+  #loading-screen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #34495e, #2980b9);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem;
+    letter-spacing: 0.05em;
+    z-index: 1000;
+  }
+
+  #loading-screen p {
+    margin-bottom: 20px;
+  }
+
+  /* Прогресс-бар */
+  .progress-bar-bg {
+    width: 300px;
+    height: 15px;
+    background: rgba(255 255 255 / 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: #1abc9c;
+    width: 0%;
+    border-radius: 10px;
+    transition: width 0.2s ease;
+  }
+
+  /* Контейнер с часами */
+  #clock-container {
+    display: none;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle at center, #1f2937, #0f172a);
+    border-radius: 50%;
+    box-shadow:
+      inset 0 0 30px #0f172a,
+      0 0 50px #1abc9c;
+    position: relative;
+  }
+
+  /* Циферблат */
+  svg {
+    width: 320px;
+    height: 320px;
+  }
+
+  /* Числа на циферблате */
+  .clock-number {
+    font-size: 20px;
+    fill: #1abc9c;
+    font-weight: 700;
+    text-shadow: 0 0 8px #16a085;
+    user-select: none;
+  }
+
+  /* Стрелки */
+  .hand {
+    stroke: #1abc9c;
+    stroke-linecap: round;
+    transform-origin: 160px 160px; /* центр циферблата */
+    transition: transform 0.5s ease-in-out;
+  }
+  .hour {
+    stroke-width: 8;
+  }
+  .minute {
+    stroke-width: 5;
+  }
+  .second {
+    stroke-width: 2;
+    stroke: #e74c3c;
+  }
+
+  /* Центр циферблата */
+  #center-dot {
+    fill: #1abc9c;
+    filter: drop-shadow(0 0 5px #16a085);
+  }
+
+</style>
 </head>
 <body>
 
-  <!-- Экран загрузки -->
-  <div id="loading-screen">
-    <h2>Расслабься</h2>
-    <p>Подготовься к медитации и настройся на спокойствие</p>
-    <div class="progress-bar-container">
-      <div class="progress-bar" id="loading-progress"></div>
-    </div>
+<!-- Экран загрузки -->
+<div id="loading-screen" role="alert" aria-live="assertive" aria-atomic="true">
+  <p>Расслабься... Медитация начинается</p>
+  <div class="progress-bar-bg" aria-label="Прогресс загрузки">
+    <div class="progress-bar-fill"></div>
   </div>
+</div>
 
-  <h1>Медитация Таймер</h1>
+<!-- Часы -->
+<div id="clock-container" aria-label="Механические часы">
+  <svg viewBox="0 0 320 320" role="img" aria-labelledby="clockTitle">
+    <title id="clockTitle">Механические часы</title>
 
-  <div class="buttons">
-    <button id="start-btn">Начать</button>
-    <button id="pause-btn" disabled>Пауза</button>
-    <button id="reset-btn" disabled>Сброс</button>
-  </div>
+    <!-- Круг циферблата -->
+    <circle cx="160" cy="160" r="150" stroke="#1abc9c" stroke-width="4" fill="url(#clockGradient)"/>
+    <defs>
+      <radialGradient id="clockGradient" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#1f2937"/>
+        <stop offset="100%" stop-color="#0f172a"/>
+      </radialGradient>
+    </defs>
 
-  <div class="clock">
-    <div class="hand hour" id="hour-hand"></div>
-    <div class="hand minute" id="minute-hand"></div>
-    <div class="hand second" id="second-hand"></div>
-    <div class="center-dot"></div>
-  </div>
+    <!-- Числа 1-12 -->
+    <text class="clock-number" x="160" y="45" text-anchor="middle" dominant-baseline="middle">12</text>
+    <text class="clock-number" x="230" y="70" text-anchor="middle" dominant-baseline="middle">1</text>
+    <text class="clock-number" x="275" y="115" text-anchor="middle" dominant-baseline="middle">2</text>
+    <text class="clock-number" x="300" y="185" text-anchor="middle" dominant-baseline="middle">3</text>
+    <text class="clock-number" x="275" y="255" text-anchor="middle" dominant-baseline="middle">4</text>
+    <text class="clock-number" x="230" y="300" text-anchor="middle" dominant-baseline="middle">5</text>
+    <text class="clock-number" x="160" y="325" text-anchor="middle" dominant-baseline="middle">6</text>
+    <text class="clock-number" x="90" y="300" text-anchor="middle" dominant-baseline="middle">7</text>
+    <text class="clock-number" x="45" y="255" text-anchor="middle" dominant-baseline="middle">8</text>
+    <text class="clock-number" x="20" y="185" text-anchor="middle" dominant-baseline="middle">9</text>
+    <text class="clock-number" x="45" y="115" text-anchor="middle" dominant-baseline="middle">10</text>
+    <text class="clock-number" x="90" y="70" text-anchor="middle" dominant-baseline="middle">11</text>
 
-  <script>
-    // Экран загрузки и прогресс-бар
-    const loadingScreen = document.getElementById('loading-screen');
-    const loadingProgress = document.getElementById('loading-progress');
+    <!-- Стрелки -->
+    <line id="hour-hand" class="hand hour" x1="160" y1="160" x2="160" y2="90" />
+    <line id="minute-hand" class="hand minute" x1="160" y1="160" x2="160" y2="60" />
+    <line id="second-hand" class="hand second" x1="160" y1="160" x2="160" y2="40" />
 
-    let loadPercent = 0;
-    function loadingAnimation() {
-      if (loadPercent >= 100) {
-        loadingScreen.style.opacity = '0';
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-        }, 500);
-        return;
-      }
-      loadPercent += Math.random() * 10;
-      if (loadPercent > 100) loadPercent = 100;
-      loadingProgress.style.width = loadPercent + '%';
-      setTimeout(loadingAnimation, 300);
-    }
-    loadingAnimation();
+    <!-- Центр -->
+    <circle id="center-dot" cx="160" cy="160" r="7" />
+  </svg>
+</div>
 
-    // Таймер медитации
-    const startBtn = document.getElementById('start-btn');
-    const pauseBtn = document.getElementById('pause-btn');
-    const resetBtn = document.getElementById('reset-btn');
-
-    const hourHand = document.getElementById('hour-hand');
-    const minuteHand = document.getElementById('minute-hand');
-    const secondHand = document.getElementById('second-hand');
-
-    let timerInterval = null;
-    let totalSeconds = 0;
-    let isRunning = false;
-
-    function updateClockHands() {
-      const hours = Math.floor(totalSeconds / 3600) % 12;
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-
-      const hourDeg = (hours + minutes / 60) * 30; // 360/12 = 30
-      const minuteDeg = (minutes + seconds / 60) * 6; // 360/60 = 6
-      const secondDeg = seconds * 6;
-
-      hourHand.style.transform = `rotate(${hourDeg}deg)`;
-      minuteHand.style.transform = `rotate(${minuteDeg}deg)`;
-      secondHand.style.transform = `rotate(${secondDeg}deg)`;
-    }
-
-    function startTimer() {
-      if (isRunning) return;
-      isRunning = true;
-      startBtn.disabled = true;
-      pauseBtn.disabled = false;
-      resetBtn.disabled = false;
-
-      timerInterval = setInterval(() => {
-        totalSeconds++;
-        updateClockHands();
-      }, 1000);
-    }
-
-    function pauseTimer() {
-      if (!isRunning) return;
-      isRunning = false;
-      clearInterval(timerInterval);
-      startBtn.disabled = false;
-      pauseBtn.disabled = true;
-    }
-
-    function resetTimer() {
-      isRunning = false;
-      clearInterval(timerInterval);
-      totalSeconds = 0;
-      updateClockHands();
-      startBtn.disabled = false;
-      pauseBtn.disabled = true;
-      resetBtn.disabled = true;
-    }
-
-    startBtn.addEventListener('click', startTimer);
-    pauseBtn.addEventListener('click', pauseTimer);
-    resetBtn.addEventListener('click', resetTimer);
-
-    // Инициализация стрелок на 12 часов при загрузке
-    function initClock() {
-      hourHand.style.transform = 'rotate(0deg)';
-      minuteHand.style.transform = 'rotate(0deg)';
-      secondHand.style.transform = 'rotate(0deg)';
-    }
-
-    initClock();
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
