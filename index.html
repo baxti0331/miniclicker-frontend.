@@ -1,187 +1,242 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Медитация Таймер</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
-
-  body {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #f0f0f0;
-    font-family: 'Montserrat', sans-serif;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  h1 {
-    font-weight: 600;
-    font-size: 2.5rem;
-    margin-bottom: 30px;
-    text-shadow: 0 0 10px rgba(255,255,255,0.3);
-  }
-  label {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    display: block;
-  }
-  #minutes {
-    width: 100px;
-    font-size: 1.3rem;
-    padding: 10px;
-    border-radius: 12px;
-    border: none;
-    text-align: center;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    transition: box-shadow 0.3s ease;
-  }
-  #minutes:focus {
-    outline: none;
-    box-shadow: 0 0 15px #ffd700;
-  }
-  #timer {
-    font-size: 6rem;
-    font-weight: 700;
-    margin-bottom: 40px;
-    letter-spacing: 3px;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-  }
-  button {
-    background: linear-gradient(45deg, #ffd700, #ffa500);
-    border: none;
-    border-radius: 50px;
-    padding: 15px 40px;
-    margin: 0 15px;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #222;
-    cursor: pointer;
-    box-shadow: 0 6px 12px rgba(255, 165, 0, 0.6);
-    transition: transform 0.2s ease, box-shadow 0.3s ease;
-  }
-  button:hover:not(:disabled) {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 20px rgba(255, 215, 0, 0.8);
-  }
-  button:disabled {
-    background: #aaa;
-    cursor: not-allowed;
-    box-shadow: none;
-    color: #666;
-    transform: none;
-  }
-  @media (max-width: 480px) {
-    #timer {
-      font-size: 4rem;
-      margin-bottom: 30px;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Медитация Таймер</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin-top: 0;
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .buttons {
+      margin: 30px 0;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     button {
-      padding: 12px 30px;
-      font-size: 1rem;
-      margin: 8px 8px;
+      background: linear-gradient(145deg, #6c63ff, #4b47f3);
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 8px 15px rgba(75, 71, 243, 0.4);
+      color: white;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 140px;
+      text-align: center;
     }
-    #minutes {
-      width: 80px;
-      font-size: 1.1rem;
-      margin-bottom: 25px;
+    button:hover {
+      background: linear-gradient(145deg, #4b47f3, #6c63ff);
+      box-shadow: 0 12px 20px rgba(75, 71, 243, 0.7);
+      transform: translateY(-3px);
     }
-  }
-</style>
+
+    /* Модальное окно */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right:0; bottom:0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+      flex-direction: column;
+      padding: 20px;
+      text-align: center;
+    }
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal h2 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 0 0 10px #6c63ff;
+    }
+    .modal button.close-btn {
+      margin-top: 30px;
+      background: #ff4e50;
+      box-shadow: 0 8px 15px rgba(255, 78, 80, 0.6);
+    }
+    .modal button.close-btn:hover {
+      background: #ff2a2c;
+      box-shadow: 0 12px 20px rgba(255, 42, 44, 0.9);
+      transform: translateY(-3px);
+    }
+
+    /* Часы */
+    .clock {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      border: 12px solid #fff;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #6c63ff, #4b47f3);
+      box-shadow: 0 0 30px rgba(75, 71, 243, 0.7);
+      margin: 20px auto;
+    }
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      background: white;
+      border-radius: 6px;
+      transition: transform 0.5s cubic-bezier(0.4, 2.34, 0.3, 1);
+    }
+    .hour {
+      width: 8px;
+      height: 60px;
+      background: #dcd6f7;
+      z-index: 3;
+    }
+    .minute {
+      width: 6px;
+      height: 90px;
+      background: #b8b2f7;
+      z-index: 2;
+    }
+    .second {
+      width: 2px;
+      height: 110px;
+      background: #ff4e50;
+      z-index: 1;
+    }
+    .center-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px #ff4e50;
+      z-index: 4;
+    }
+  </style>
 </head>
 <body>
+  <h1>Медитация Таймер</h1>
+  <div class="buttons">
+    <button id="start-btn">Начать</button>
+    <button id="pause-btn" disabled>Пауза</button>
+    <button id="reset-btn" disabled>Сброс</button>
+  </div>
 
-<h1>Таймер для Медитации</h1>
+  <div class="clock">
+    <div class="hand hour" id="hour-hand"></div>
+    <div class="hand minute" id="minute-hand"></div>
+    <div class="hand second" id="second-hand"></div>
+    <div class="center-dot"></div>
+  </div>
 
-<label for="minutes">Минуты для медитации:</label>
-<input type="number" id="minutes" min="1" max="120" value="10" />
+  <div id="modal" class="modal">
+    <h2>Расслабься</h2>
+    <button class="close-btn" id="close-modal-btn">Закрыть</button>
+  </div>
 
-<div id="timer">10:00</div>
+  <script>
+    const startBtn = document.getElementById('start-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const modal = document.getElementById('modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
 
-<div>
-  <button id="startBtn">Старт</button>
-  <button id="pauseBtn" disabled>Пауза</button>
-  <button id="resetBtn" disabled>Сброс</button>
-</div>
+    const hourHand = document.getElementById('hour-hand');
+    const minuteHand = document.getElementById('minute-hand');
+    const secondHand = document.getElementById('second-hand');
 
-<script>
-  const timerEl = document.getElementById('timer');
-  const minutesInput = document.getElementById('minutes');
-  const startBtn = document.getElementById('startBtn');
-  const pauseBtn = document.getElementById('pauseBtn');
-  const resetBtn = document.getElementById('resetBtn');
+    let timerInterval = null;
+    let totalSeconds = 0;
+    let isRunning = false;
 
-  let totalSeconds = minutesInput.value * 60;
-  let interval = null;
-  let isPaused = false;
+    function updateClockHands() {
+      const hours = Math.floor(totalSeconds / 3600) % 12;
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
 
-  function updateTimerDisplay(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    timerEl.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-  }
+      const hourDeg = (hours + minutes / 60) * 30; // 360/12 = 30
+      const minuteDeg = (minutes + seconds / 60) * 6; // 360/60 = 6
+      const secondDeg = seconds * 6;
 
-  function tick() {
-    if (totalSeconds > 0) {
-      totalSeconds--;
-      updateTimerDisplay(totalSeconds);
-    } else {
-      clearInterval(interval);
-      alert('Медитация закончена! 🧘‍♂️');
+      hourHand.style.transform = `rotate(${hourDeg}deg)`;
+      minuteHand.style.transform = `rotate(${minuteDeg}deg)`;
+      secondHand.style.transform = `rotate(${secondDeg}deg)`;
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      modal.classList.add('active');
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      resetBtn.disabled = false;
+
+      timerInterval = setInterval(() => {
+        totalSeconds++;
+        updateClockHands();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      isRunning = false;
+      clearInterval(timerInterval);
       startBtn.disabled = false;
       pauseBtn.disabled = true;
-      resetBtn.disabled = false;
-      minutesInput.disabled = false;
     }
-  }
 
-  startBtn.addEventListener('click', () => {
-    totalSeconds = minutesInput.value * 60;
-    if (totalSeconds <= 0) {
-      alert('Введите положительное количество минут');
-      return;
+    function resetTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+      totalSeconds = 0;
+      updateClockHands();
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resetBtn.disabled = true;
+      modal.classList.remove('active');
     }
-    updateTimerDisplay(totalSeconds);
-    interval = setInterval(tick, 1000);
-    startBtn.disabled = true;
-    pauseBtn.disabled = false;
-    resetBtn.disabled = false;
-    minutesInput.disabled = true;
-  });
 
-  pauseBtn.addEventListener('click', () => {
-    if (isPaused) {
-      interval = setInterval(tick, 1000);
-      pauseBtn.textContent = 'Пауза';
-      isPaused = false;
-    } else {
-      clearInterval(interval);
-      pauseBtn.textContent = 'Продолжить';
-      isPaused = true;
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    resetBtn.addEventListener('click', resetTimer);
+    closeModalBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    // Инициализация стрелок на 12 часов при загрузке
+    function initClock() {
+      hourHand.style.transform = 'rotate(0deg)';
+      minuteHand.style.transform = 'rotate(0deg)';
+      secondHand.style.transform = 'rotate(0deg)';
     }
-  });
 
-  resetBtn.addEventListener('click', () => {
-    clearInterval(interval);
-    totalSeconds = minutesInput.value * 60;
-    updateTimerDisplay(totalSeconds);
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
-    resetBtn.disabled = true;
-    pauseBtn.textContent = 'Пауза';
-    minutesInput.disabled = false;
-    isPaused = false;
-  });
-
-  // Инициализация таймера при загрузке
-  updateTimerDisplay(totalSeconds);
-</script>
-
+    initClock();
+  </script>
 </body>
 </html>
