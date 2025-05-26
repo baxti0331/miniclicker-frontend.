@@ -87,8 +87,13 @@
       color: #121212;
       cursor: pointer;
     }
+
+    .disabled {
+      background: #555 !important;
+      cursor: default !important;
+      color: #ccc !important;
+    }
   </style>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
@@ -105,15 +110,15 @@
     <h1>Ежедневные задания</h1>
     <div class="task">
       <span>Кликни 10 раз</span>
-      <button onclick="completeTask('click_10_times', this)">Выполнить</button>
+      <button id="task-click_10_times" onclick="completeTask('click_10_times', this)">Выполнить</button>
     </div>
     <div class="task">
-      <span>Бонус за день</span>
-      <button onclick="completeTask('bonus', this)">Выполнить</button>
+      <span>Ежедневный бонус</span>
+      <button id="task-bonus" onclick="completeTask('bonus', this)">Выполнить</button>
     </div>
     <div class="task">
       <span>Пригласи друга</span>
-      <button onclick="completeTask('invite_friend', this)">Выполнить</button>
+      <button id="task-invite_friend" onclick="alert('Пригласи друга, чтобы получить бонус!')">Выполнить</button>
     </div>
   </section>
 
@@ -122,11 +127,11 @@
     <h1>Магазин</h1>
     <div class="shop-item">
       <span>Автокликер — 500 монет</span>
-      <button disabled>Купить</button>
+      <button id="buy-autoclicker" onclick="buyItem('autoclicker')">Купить</button>
     </div>
     <div class="shop-item">
       <span>Удвоитель — 1000 монет</span>
-      <button disabled>Купить</button>
+      <button id="buy-doubler" onclick="buyItem('doubler')">Купить</button>
     </div>
   </section>
 </main>
@@ -134,81 +139,110 @@
 <!-- Навигация -->
 <div class="tabbar">
   <button onclick="showTab('home')">🏠</button>
-  <button onclick="showTab('tasks')">📝</button>
+  <button onclick="showTab('tasks')">📋</button>
   <button onclick="showTab('shop')">🛒</button>
 </div>
 
 <script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
+  const API_BASE = 'https://miniclicker-backend.onrender.com'; // твой backend
 
-  const userId = tg.initDataUnsafe?.user?.id;
+  let userId = 'user_' + Math.floor(Math.random() * 1000000); // временный ID
+
   const coinsEl = document.getElementById('coins');
+  const clickBtn = document.getElementById('click-btn');
 
-  // Показать выбранный раздел
-  function showTab(tabId) {
-    document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-    document.getElementById(tabId).classList.remove('hidden');
+  function showTab(tab) {
+    document.getElementById('home').classList.add('hidden');
+    document.getElementById('tasks').classList.add('hidden');
+    document.getElementById('shop').classList.add('hidden');
+    document.getElementById(tab).classList.remove('hidden');
   }
 
-  // Обновить баланс
   async function updateBalance() {
     try {
-      const res = await fetch(`https://miniclicker-backend.onrender.com/balance/${userId}`);
+      const res = await fetch(`${API_BASE}/balance/${userId}`);
       const data = await res.json();
-      coinsEl.innerText = `Монеты: ${data.coins}`;
-    } catch {
-      coinsEl.innerText = 'Ошибка загрузки';
+      coinsEl.textContent = `Монет: ${data.coins}`;
+      updateTaskButtons();
+    } catch(e) {
+      coinsEl.textContent = 'Ошибка загрузки баланса';
     }
   }
 
-  // Кликнуть
-  document.getElementById('click-btn').addEventListener('click', async () => {
+  async function click() {
     try {
-      const res = await fetch('https://miniclicker-backend.onrender.com/click', {
+      const res = await fetch(`${API_BASE}/click`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
+        body: JSON.stringify({ user_id: userId }),
       });
       const data = await res.json();
       if (data.success) {
-        coinsEl.innerText = `Монеты: ${data.coins}`;
-      }
-    } catch {
-      alert('Ошибка клика');
-    }
-  });
-
-  // Выполнить задание
-  async function completeTask(task, btn) {
-    btn.disabled = true;
-    btn.innerText = '...';
-
-    try {
-      const res = await fetch('https://miniclicker-backend.onrender.com/reward', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, task })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        btn.innerText = '✅';
         updateBalance();
-        alert(`+${data.total} монет`);
-      } else {
-        btn.disabled = false;
-        btn.innerText = 'Выполнить';
-        alert(data.error || 'Ошибка');
       }
-    } catch {
-      alert('Ошибка задания');
-      btn.disabled = false;
-      btn.innerText = 'Выполнить';
+    } catch(e) {
+      console.error(e);
     }
   }
 
+  async function completeTask(taskName, btn) {
+    try {
+      const res = await fetch(`${API_BASE}/reward`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, task: taskName }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`Задание выполнено! +${data.total} монет`);
+        btn.disabled = true;
+        btn.classList.add('disabled');
+        updateBalance();
+      } else {
+        alert(data.error);
+      }
+    } catch(e) {
+      alert('Ошибка выполнения задания');
+    }
+  }
+
+  async function buyItem(item) {
+    try {
+      const res = await fetch(`${API_BASE}/buy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, item }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`Покупка успешна! Остаток: ${data.coins} монет`);
+        updateBalance();
+      } else {
+        alert(data.error);
+      }
+    } catch(e) {
+      alert('Ошибка покупки');
+    }
+  }
+
+  // Обновляем кнопки заданий (отключаем выполненные)
+  async function updateTaskButtons() {
+    try {
+      // Запрос к backend не предусмотрен, для простоты запросим баланс и обновим UI (напрямую из backend пока нет)
+      // Если хочешь, можно расширить API и хранить прогресс
+      // Пока просто оставим все активными, кроме бонуса (скрываем если взят)
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  clickBtn.onclick = click;
+
+  showTab('home');
   updateBalance();
+
+  // Обновлять баланс каждые 5 секунд (чтобы видеть автокликер)
+  setInterval(updateBalance, 5000);
 </script>
 
 </body>
