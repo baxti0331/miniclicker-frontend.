@@ -1,0 +1,57 @@
+body, html {
+  margin: 0; padding: 0; overflow: hidden;
+  background: radial-gradient(circle at center, #000000, #040d1a);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+  user-select: none;
+  height: 100vh;
+}
+
+#ui {
+  position: absolute;
+  top: 10px; left: 10px;
+  background: rgba(0,0,0,0.5);
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 300px;
+  z-index: 10;
+}
+
+#buttons {
+  margin-top: 10px;
+}
+
+button {
+  background-color: #222;
+  border: none;
+  padding: 8px 12px;
+  margin-right: 8px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+h1 {
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+}
+
+h2 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+}
+
+p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+canvas {
+  display: block;
+}
