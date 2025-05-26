@@ -8,12 +8,13 @@
     body {
       margin: 0;
       padding: 0;
-      background: #121212;
-      color: #f0c419;
       font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #0f0f0f, #1e1e1e);
+      color: #f0c419;
       display: flex;
       flex-direction: column;
       height: 100vh;
+      background-attachment: fixed;
     }
 
     main {
@@ -23,8 +24,8 @@
     }
 
     h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
+      font-size: 26px;
+      margin-bottom: 12px;
       text-align: center;
     }
 
@@ -32,36 +33,49 @@
       background-color: #f0c419;
       color: #121212;
       border: none;
-      border-radius: 12px;
-      padding: 12px 24px;
+      border-radius: 16px;
+      padding: 14px 28px;
       margin: 10px auto;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       cursor: pointer;
       display: block;
-      max-width: 300px;
+      max-width: 320px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      background-color: #ffd633;
     }
 
     #coins {
       text-align: center;
-      font-size: 28px;
+      font-size: 32px;
       margin: 20px 0;
+      color: #ffffff;
     }
 
     .tabbar {
       display: flex;
-      background: #1f1f1f;
+      background: #181818;
       border-top: 1px solid #333;
     }
 
     .tabbar button {
       flex: 1;
       padding: 15px 0;
-      font-size: 16px;
+      font-size: 18px;
       background: none;
       color: #f0c419;
       border: none;
       cursor: pointer;
+      font-weight: bold;
+    }
+
+    .tabbar button:hover {
+      background: #292929;
     }
 
     .hidden {
@@ -69,43 +83,52 @@
     }
 
     .task, .shop-item {
-      background: #222;
-      border-radius: 12px;
-      margin: 10px 0;
-      padding: 15px;
+      background: #2a2a2a;
+      border-radius: 16px;
+      margin: 12px 0;
+      padding: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    .task span, .shop-item span {
+      color: #f9f9f9;
+      font-size: 16px;
     }
 
     .task button, .shop-item button {
       background: #f0c419;
       border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
+      border-radius: 10px;
+      padding: 8px 16px;
       font-weight: bold;
       color: #121212;
       cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .task button:hover, .shop-item button:hover {
+      background: #ffd633;
     }
 
     .disabled {
-      background: #555 !important;
-      cursor: default !important;
-      color: #ccc !important;
+      background: #444 !important;
+      color: #aaa !important;
+      cursor: not-allowed !important;
     }
   </style>
 </head>
 <body>
 
 <main>
-  <!-- Главная -->
   <section id="home">
     <h1>Mini Clicker</h1>
     <div id="coins">Загрузка...</div>
     <button class="btn" id="click-btn">Кликнуть</button>
   </section>
 
-  <!-- Задания -->
   <section id="tasks" class="hidden">
     <h1>Ежедневные задания</h1>
     <div class="task">
@@ -122,7 +145,6 @@
     </div>
   </section>
 
-  <!-- Магазин -->
   <section id="shop" class="hidden">
     <h1>Магазин</h1>
     <div class="shop-item">
@@ -136,7 +158,6 @@
   </section>
 </main>
 
-<!-- Навигация -->
 <div class="tabbar">
   <button onclick="showTab('home')">🏠</button>
   <button onclick="showTab('tasks')">📋</button>
@@ -144,9 +165,8 @@
 </div>
 
 <script>
-  const API_BASE = 'https://miniclicker-backend.onrender.com'; // твой backend
-
-  let userId = 'user_' + Math.floor(Math.random() * 1000000); // временный ID
+  const API_BASE = 'https://miniclicker-backend.onrender.com';
+  let userId = 'user_' + Math.floor(Math.random() * 1000000);
 
   const coinsEl = document.getElementById('coins');
   const clickBtn = document.getElementById('click-btn');
@@ -163,9 +183,8 @@
       const res = await fetch(`${API_BASE}/balance/${userId}`);
       const data = await res.json();
       coinsEl.textContent = `Монет: ${data.coins}`;
-      updateTaskButtons();
     } catch(e) {
-      coinsEl.textContent = 'Ошибка загрузки баланса';
+      coinsEl.textContent = 'Ошибка загрузки';
     }
   }
 
@@ -202,7 +221,7 @@
         alert(data.error);
       }
     } catch(e) {
-      alert('Ошибка выполнения задания');
+      alert('Ошибка выполнения');
     }
   }
 
@@ -215,7 +234,7 @@
       });
       const data = await res.json();
       if (data.success) {
-        alert(`Покупка успешна! Остаток: ${data.coins} монет`);
+        alert(`Покупка успешна! Осталось ${data.coins} монет`);
         updateBalance();
       } else {
         alert(data.error);
@@ -225,23 +244,9 @@
     }
   }
 
-  // Обновляем кнопки заданий (отключаем выполненные)
-  async function updateTaskButtons() {
-    try {
-      // Запрос к backend не предусмотрен, для простоты запросим баланс и обновим UI (напрямую из backend пока нет)
-      // Если хочешь, можно расширить API и хранить прогресс
-      // Пока просто оставим все активными, кроме бонуса (скрываем если взят)
-    } catch(e) {
-      console.error(e);
-    }
-  }
-
   clickBtn.onclick = click;
-
   showTab('home');
   updateBalance();
-
-  // Обновлять баланс каждые 5 секунд (чтобы видеть автокликер)
   setInterval(updateBalance, 5000);
 </script>
 
