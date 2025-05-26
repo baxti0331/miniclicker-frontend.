@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ежедневные задания</title>
+  <style>
+    body {
+      background: #121212;
+      color: #f0c419;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .task {
+      background: #222;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .task p {
+      margin: 0;
+    }
+    button {
+      background: #f0c419;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 15px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #222;
+    }
+    button:disabled {
+      background: #555;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>Задания</h1>
+
+  <div class="task">
+    <p>Кликни 10 раз</p>
+    <button onclick="completeTask('click_10_times', this)">Выполнить</button>
+  </div>
+  <div class="task">
+    <p>Бонус за день</p>
+    <button onclick="completeTask('bonus', this)">Выполнить</button>
+  </div>
+  <div class="task">
+    <p>Пригласи друга</p>
+    <button onclick="completeTask('invite_friend', this)">Выполнить</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const userId = params.get('user_id');
+
+    async function completeTask(task, btn) {
+      if (!userId) return alert('Нет user_id');
+
+      btn.disabled = true;
+      btn.innerText = 'Обработка...';
+
+      try {
+        const res = await fetch('https://miniclicker-backend.onrender.com/reward', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, task })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          btn.innerText = 'Выполнено';
+          alert(`✅ +${data.total} монет`);
+        } else {
+          btn.disabled = false;
+          btn.innerText = 'Выполнить';
+          alert(data.error || 'Ошибка');
+        }
+      } catch (e) {
+        alert('Ошибка подключения');
+        btn.disabled = false;
+        btn.innerText = 'Выполнить';
+      }
+    }
+  </script>
+</body>
+</html>
