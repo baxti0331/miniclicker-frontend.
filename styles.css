@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+h1, h2, p {
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+/* Загрузка */
+.loading-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30, 30, 60, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  transition: opacity 0.5s ease;
+}
+
+.progress-bar-container {
+  width: 80%;
+  max-width: 400px;
+  height: 20px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 15px;
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #6c63ff, #4b47f3);
+  border-radius: 10px;
+  transition: width 0.05s linear;
+}
+
+/* Основной контент */
+.main-content {
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+/* Кнопки */
+.buttons {
+  margin: 30px 0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+button {
+  background: linear-gradient(145deg, #6c63ff, #4b47f3);
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 8px 15px rgba(75, 71, 243, 0.4);
+  color: white;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  text-align: center;
+}
+
+button:hover:not(:disabled) {
+  background: linear-gradient(145deg, #4b47f3, #6c63ff);
+  box-shadow: 0 12px 20px rgba(75, 71, 243, 0.7);
+  transform: translateY(-3px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Модальное окно */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right:0; bottom:0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  text-align: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal.active {
+  display: flex;
+  opacity: 1;
+}
+
+.modal h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #fff;
+  text-shadow: 0 0 10px #6c63ff;
+}
+
+.modal button.close-btn {
+  margin-top: 30px;
+  background: #ff4e50;
+  box-shadow: 0 8px 15px rgba(255, 78, 80, 0.6);
+}
+
+.modal button.close-btn:hover {
+  background: #ff2a2c;
+  box-shadow: 0 12px 20px rgba(255, 42, 44, 0.9);
+  transform: translateY(-3px);
+}
+
+/* Часы */
+.clock {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  border: 12px solid #fff;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #6c63ff, #4b47f3);
+  box-shadow: 0 0 30px rgba(75, 71, 243, 0.7);
+  margin: 20px auto;
+}
+
+.hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform-origin: bottom center;
+  border-radius: 6px;
+  transition: transform 0.5s cubic-bezier(0.4, 2.34, 0.3, 1);
+}
+
+.hour {
+  width: 8px;
+  height: 60px;
+  background: #dcd6f7;
+  z-index: 3;
+}
+
+.minute {
+  width: 6px;
+  height: 90px;
+  background: #b8b2f7;
+  z-index: 2;
+}
+
+.second {
+  width: 2px;
+  height: 110px;
+  background: #ff4e50;
+  z-index: 1;
+}
+
+.center-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 15px #ff4e50;
+  z-index: 4;
+}
