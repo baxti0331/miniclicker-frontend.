@@ -17,6 +17,7 @@
       min-height: 100vh;
       padding: 20px;
       box-sizing: border-box;
+      overflow: hidden;
     }
     h1 {
       margin-top: 0;
@@ -51,43 +52,6 @@
       transform: translateY(-3px);
     }
 
-    /* Модальное окно */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right:0; bottom:0;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-      flex-direction: column;
-      padding: 20px;
-      text-align: center;
-    }
-    .modal.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .modal h2 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-      color: #fff;
-      text-shadow: 0 0 10px #6c63ff;
-    }
-    .modal button.close-btn {
-      margin-top: 30px;
-      background: #ff4e50;
-      box-shadow: 0 8px 15px rgba(255, 78, 80, 0.6);
-    }
-    .modal button.close-btn:hover {
-      background: #ff2a2c;
-      box-shadow: 0 12px 20px rgba(255, 42, 44, 0.9);
-      transform: translateY(-3px);
-    }
-
     /* Часы */
     .clock {
       position: relative;
@@ -98,6 +62,7 @@
       background: radial-gradient(circle at center, #6c63ff, #4b47f3);
       box-shadow: 0 0 30px rgba(75, 71, 243, 0.7);
       margin: 20px auto;
+      z-index: 1;
     }
     .hand {
       position: absolute;
@@ -138,10 +103,62 @@
       box-shadow: 0 0 15px #ff4e50;
       z-index: 4;
     }
+
+    /* Экран загрузки */
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #1c1c49, #0d0d2b);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    #loading-screen h2 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #6c63ff;
+    }
+    #loading-screen p {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+      max-width: 320px;
+      line-height: 1.4;
+    }
+    .progress-bar-container {
+      width: 320px;
+      height: 20px;
+      background: #22234b;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 10px #6c63ff66 inset;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6c63ff, #4b47f3);
+      border-radius: 15px;
+      transition: width 0.3s ease;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Экран загрузки -->
+  <div id="loading-screen">
+    <h2>Расслабься</h2>
+    <p>Подготовься к медитации и настройся на спокойствие</p>
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="loading-progress"></div>
+    </div>
+  </div>
+
   <h1>Медитация Таймер</h1>
+
   <div class="buttons">
     <button id="start-btn">Начать</button>
     <button id="pause-btn" disabled>Пауза</button>
@@ -155,17 +172,31 @@
     <div class="center-dot"></div>
   </div>
 
-  <div id="modal" class="modal">
-    <h2>Расслабься</h2>
-    <button class="close-btn" id="close-modal-btn">Закрыть</button>
-  </div>
-
   <script>
+    // Экран загрузки и прогресс-бар
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingProgress = document.getElementById('loading-progress');
+
+    let loadPercent = 0;
+    function loadingAnimation() {
+      if (loadPercent >= 100) {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 500);
+        return;
+      }
+      loadPercent += Math.random() * 10;
+      if (loadPercent > 100) loadPercent = 100;
+      loadingProgress.style.width = loadPercent + '%';
+      setTimeout(loadingAnimation, 300);
+    }
+    loadingAnimation();
+
+    // Таймер медитации
     const startBtn = document.getElementById('start-btn');
     const pauseBtn = document.getElementById('pause-btn');
     const resetBtn = document.getElementById('reset-btn');
-    const modal = document.getElementById('modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
 
     const hourHand = document.getElementById('hour-hand');
     const minuteHand = document.getElementById('minute-hand');
@@ -192,7 +223,6 @@
     function startTimer() {
       if (isRunning) return;
       isRunning = true;
-      modal.classList.add('active');
       startBtn.disabled = true;
       pauseBtn.disabled = false;
       resetBtn.disabled = false;
@@ -219,15 +249,11 @@
       startBtn.disabled = false;
       pauseBtn.disabled = true;
       resetBtn.disabled = true;
-      modal.classList.remove('active');
     }
 
     startBtn.addEventListener('click', startTimer);
     pauseBtn.addEventListener('click', pauseTimer);
     resetBtn.addEventListener('click', resetTimer);
-    closeModalBtn.addEventListener('click', () => {
-      modal.classList.remove('active');
-    });
 
     // Инициализация стрелок на 12 часов при загрузке
     function initClock() {
