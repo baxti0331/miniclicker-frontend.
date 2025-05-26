@@ -64,10 +64,12 @@ function playBuySound() {
 }
 
 function showTab(tab) {
-  ['shop', 'tasks', 'referrals', 'achievements'].forEach(id => {
+  ['main', 'shop', 'tasks', 'referrals', 'achievements'].forEach(id => {
     document.getElementById(id).classList.add('hidden');
   });
-  if (tab !== 'main') document.getElementById(tab).classList.remove('hidden');
+  if (tab !== 'main') {
+    document.getElementById(tab).classList.remove('hidden');
+  }
 }
 
 // Клик по монете
