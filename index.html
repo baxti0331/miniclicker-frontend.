@@ -59,7 +59,7 @@
 
     async function clickCoin() {
       try {
-        const response = await fetch('https://your-backend-name.onrender.com/click', {
+        const response = await fetch('https://miniclicker-backend.onrender.com/click', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ user_id: userId })
