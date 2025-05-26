@@ -7,54 +7,63 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(145deg, #0f0f0f, #1e1e1e);
       color: #f0c419;
       display: flex;
       flex-direction: column;
       height: 100vh;
-      background-attachment: fixed;
+      overflow: hidden;
     }
 
     main {
       flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    h1 {
-      font-size: 26px;
-      margin-bottom: 12px;
       text-align: center;
-    }
-
-    .btn {
-      background-color: #f0c419;
-      color: #121212;
-      border: none;
-      border-radius: 16px;
-      padding: 14px 28px;
-      margin: 10px auto;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      display: block;
-      max-width: 320px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-      transform: scale(1.05);
-      background-color: #ffd633;
+      padding: 20px;
+      position: relative;
     }
 
     #coins {
-      text-align: center;
-      font-size: 32px;
-      margin: 20px 0;
-      color: #ffffff;
+      font-size: 28px;
+      margin: 12px 0;
+      color: #fff;
+    }
+
+    #level {
+      font-size: 18px;
+      color: #aaa;
+    }
+
+    #coin-button {
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle at center, #ffd700, #e5b800);
+      border-radius: 50%;
+      margin: 30px auto;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .particle {
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle, #ffd700, #e5b800);
+      border-radius: 50%;
+      position: absolute;
+      animation: fly 1s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes fly {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(calc(-30px + 60px * var(--x)), -120px) scale(0.5);
+        opacity: 0;
+      }
     }
 
     .tabbar {
@@ -82,172 +91,76 @@
       display: none;
     }
 
-    .task, .shop-item {
+    #referrals {
+      padding: 20px;
+    }
+
+    #referrals h2 {
+      font-size: 22px;
+      color: #fff;
+    }
+
+    #referral-code {
       background: #2a2a2a;
-      border-radius: 16px;
-      margin: 12px 0;
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    }
-
-    .task span, .shop-item span {
-      color: #f9f9f9;
-      font-size: 16px;
-    }
-
-    .task button, .shop-item button {
-      background: #f0c419;
-      border: none;
+      padding: 10px;
       border-radius: 10px;
-      padding: 8px 16px;
-      font-weight: bold;
-      color: #121212;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .task button:hover, .shop-item button:hover {
-      background: #ffd633;
-    }
-
-    .disabled {
-      background: #444 !important;
-      color: #aaa !important;
-      cursor: not-allowed !important;
+      color: #fff;
+      font-size: 16px;
+      margin-top: 10px;
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
 
 <main>
-  <section id="home">
-    <h1>Mini Clicker</h1>
-    <div id="coins">Загрузка...</div>
-    <button class="btn" id="click-btn">Кликнуть</button>
-  </section>
+  <h1>Mini Clicker</h1>
+  <div id="coins">Монет: 0</div>
+  <div id="level">Уровень: 1</div>
 
-  <section id="tasks" class="hidden">
-    <h1>Ежедневные задания</h1>
-    <div class="task">
-      <span>Кликни 10 раз</span>
-      <button id="task-click_10_times" onclick="completeTask('click_10_times', this)">Выполнить</button>
-    </div>
-    <div class="task">
-      <span>Ежедневный бонус</span>
-      <button id="task-bonus" onclick="completeTask('bonus', this)">Выполнить</button>
-    </div>
-    <div class="task">
-      <span>Пригласи друга</span>
-      <button id="task-invite_friend" onclick="alert('Пригласи друга, чтобы получить бонус!')">Выполнить</button>
-    </div>
-  </section>
+  <div id="coin-button" onclick="clickCoin(event)"></div>
 
-  <section id="shop" class="hidden">
-    <h1>Магазин</h1>
-    <div class="shop-item">
-      <span>Автокликер — 500 монет</span>
-      <button id="buy-autoclicker" onclick="buyItem('autoclicker')">Купить</button>
-    </div>
-    <div class="shop-item">
-      <span>Удвоитель — 1000 монет</span>
-      <button id="buy-doubler" onclick="buyItem('doubler')">Купить</button>
-    </div>
+  <section id="referrals" class="hidden">
+    <h2>Твоя реферальная ссылка:</h2>
+    <div id="referral-code">https://t.me/yourbot?start=ref123</div>
   </section>
 </main>
 
 <div class="tabbar">
-  <button onclick="showTab('home')">🏠</button>
-  <button onclick="showTab('tasks')">📋</button>
-  <button onclick="showTab('shop')">🛒</button>
+  <button onclick="showTab('main')">🏠</button>
+  <button onclick="showTab('referrals')">👥</button>
 </div>
 
 <script>
-  const API_BASE = 'https://miniclicker-backend.onrender.com';
-  let userId = 'user_' + Math.floor(Math.random() * 1000000);
-
-  const coinsEl = document.getElementById('coins');
-  const clickBtn = document.getElementById('click-btn');
+  let coins = 0;
+  let level = 1;
 
   function showTab(tab) {
-    document.getElementById('home').classList.add('hidden');
-    document.getElementById('tasks').classList.add('hidden');
-    document.getElementById('shop').classList.add('hidden');
-    document.getElementById(tab).classList.remove('hidden');
-  }
-
-  async function updateBalance() {
-    try {
-      const res = await fetch(`${API_BASE}/balance/${userId}`);
-      const data = await res.json();
-      coinsEl.textContent = `Монет: ${data.coins}`;
-    } catch(e) {
-      coinsEl.textContent = 'Ошибка загрузки';
+    document.getElementById('referrals').classList.add('hidden');
+    if (tab === 'referrals') {
+      document.getElementById('referrals').classList.remove('hidden');
     }
   }
 
-  async function click() {
-    try {
-      const res = await fetch(`${API_BASE}/click`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        updateBalance();
-      }
-    } catch(e) {
-      console.error(e);
+  function clickCoin(e) {
+    coins += 1;
+    document.getElementById('coins').innerText = 'Монет: ' + coins;
+
+    if (coins % 10 === 0) {
+      level++;
+      document.getElementById('level').innerText = 'Уровень: ' + level;
+    }
+
+    for (let i = 0; i < 6; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = (e.clientX - 8) + 'px';
+      particle.style.top = (e.clientY - 8) + 'px';
+      particle.style.setProperty('--x', Math.random());
+      document.body.appendChild(particle);
+      setTimeout(() => particle.remove(), 1000);
     }
   }
-
-  async function completeTask(taskName, btn) {
-    try {
-      const res = await fetch(`${API_BASE}/reward`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, task: taskName }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert(`Задание выполнено! +${data.total} монет`);
-        btn.disabled = true;
-        btn.classList.add('disabled');
-        updateBalance();
-      } else {
-        alert(data.error);
-      }
-    } catch(e) {
-      alert('Ошибка выполнения');
-    }
-  }
-
-  async function buyItem(item) {
-    try {
-      const res = await fetch(`${API_BASE}/buy`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, item }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert(`Покупка успешна! Осталось ${data.coins} монет`);
-        updateBalance();
-      } else {
-        alert(data.error);
-      }
-    } catch(e) {
-      alert('Ошибка покупки');
-    }
-  }
-
-  clickBtn.onclick = click;
-  showTab('home');
-  updateBalance();
-  setInterval(updateBalance, 5000);
 </script>
 
 </body>
